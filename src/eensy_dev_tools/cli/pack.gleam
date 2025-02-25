@@ -46,8 +46,6 @@ pub fn do_app(_prune: Bool) -> Cli(Nil) {
 
   use <- cli.success("Project compiled successfully")
   use <- cli.log("Loading ")
-  // use config <- try(project.config())
-  // io.debug(config)
 
   use <- cli.log("Running atomvm beam packer")
   let root = project.root()
@@ -58,8 +56,6 @@ pub fn do_app(_prune: Bool) -> Cli(Nil) {
   let input_paths =
     result.unwrap(simplifile.get_files(in: "build/erlang-shipment/"), [])
     |> list.filter(fn(path) { string.contains(path, ".beam") })
-
-  // io.debug(input_paths)
 
   use _ <- try(packbeam.create(
     filepath.join(output_path, project_name <> ".release.avm"),

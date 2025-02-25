@@ -47,8 +47,7 @@ Here's the error message I got:
 
     {reason}
 
-If you think this is a bug, please open an issue at
-https://github.com/lustre-labs/dev-tools/issues/new with some details about what
+If you think this is a bug, please open an issue with some details about what
 you were trying to do when you ran into this issue.
 "
 
@@ -67,8 +66,7 @@ Here's the error message I got:
 
     {reason}
 
-If you think this is a bug, please open an issue at
-https://github.com/lustre-labs/dev-tools/issues/new with some details about what
+If you think this is a bug, please open an issue with some details about what
 you were trying to do when you ran into this issue.
 "
 
@@ -88,8 +86,7 @@ Here's the error message I got:
 
     {reason}
 
-If you think this is a bug, please open an issue at
-https://github.com/lustre-labs/dev-tools/issues/new with some details about what
+If you think this is a bug, please open an issue with some details about what
 you were trying to do when you ran into this issue.
 "
 

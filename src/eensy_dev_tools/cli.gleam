@@ -247,11 +247,12 @@ pub fn get_config_value(
   flag: fn(glint.Flags) -> Result(a, _),
 ) -> Cli(a) {
   use env <- Cli
-  let toml_path = list.concat([["lustre-dev"], namespace, [name]])
+  let toml_path = list.flatten([["eensy"], namespace, [name]])
+
   let value =
     result.or(
-      result.nil_error(flag(env.flags)),
-      result.nil_error(toml(env.config.toml, toml_path)),
+      result.replace_error(flag(env.flags), Nil),
+      result.replace_error(toml(env.config.toml, toml_path), Nil),
     )
     |> result.unwrap(fallback)
 

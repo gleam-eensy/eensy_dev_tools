@@ -17,3 +17,10 @@ pub fn platform() -> glint.Flag(String) {
   glint.string_flag("platform")
   |> glint.flag_help(description)
 }
+
+pub fn port() -> glint.Flag(String) {
+  let description = "Port to use for flashing a device."
+
+  glint.string_flag("port")
+  |> glint.flag_help(description)
+}

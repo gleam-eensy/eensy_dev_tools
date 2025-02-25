@@ -41,12 +41,12 @@ pub fn export() -> Result(Nil, Error) {
   |> result.replace(Nil)
 }
 
-pub fn flash_esp_32(project_name: String) -> Result(Nil, Error) {
-  cmd.exec(run: "esptool.py", in: ".", with: [
+pub fn flash_esp_32(project_name: String, port: String) -> Result(Nil, Error) {
+  let args = [
     "--chip",
     "auto",
     "--port",
-    "/dev/tty.usbserial-0001",
+    port,
     "--baud",
     "921600",
     "--before",
@@ -63,7 +63,8 @@ pub fn flash_esp_32(project_name: String) -> Result(Nil, Error) {
     "detect",
     "0x210000",
     "./build/.atomvm/" <> project_name <> ".release.avm",
-  ])
+  ]
+  cmd.exec(run: "esptool.py", in: ".", with: args)
   |> result.map_error(fn(err) { BuildError(pair.second(err)) })
   |> result.replace(Nil)
 }
