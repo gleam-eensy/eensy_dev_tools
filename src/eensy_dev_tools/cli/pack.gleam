@@ -18,7 +18,6 @@ import simplifile
 
 pub const description: String = "
 Commands for packing BEAM and static files from your project
-`gleam export export erlang-shipment`
   "
 
 // COMMANDS --------------------------------------------------------------------
