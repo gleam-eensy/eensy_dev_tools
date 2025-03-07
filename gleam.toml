@@ -1,5 +1,5 @@
 name = "eensy_dev_tools"
-version = "0.1.2"
+version = "0.2.0"
 description = "Dev Tools for Eensy (Gleam framework for microprocessor-based embedded systems)."
 licences = ["Apache-2.0"]
 
