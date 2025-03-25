@@ -31,7 +31,7 @@ pub fn create(
   )
 }
 
-@external(erlang, "packbeam_api_ffi", "create_with_result")
+@external(erlang, "eensy_dev_tools_ffi", "create_with_result")
 fn do_create(
   output_path: Path,
   input_paths: List(Path),

@@ -39,7 +39,7 @@ pub fn app() -> glint.Command(Nil) {
   }
 }
 
-pub fn do_app(_prune: Bool) -> Cli(Nil) {
+pub fn do_app(prune: Bool) -> Cli(Nil) {
   use <- cli.log("Packing your project")
   use project_name <- do(cli.get_name())
 
@@ -59,7 +59,7 @@ pub fn do_app(_prune: Bool) -> Cli(Nil) {
   use _ <- try(packbeam.create(
     filepath.join(output_path, project_name <> ".release.avm"),
     input_paths,
-    Some(False),
+    Some(prune),
     project_name,
     None,
   ))
