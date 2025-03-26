@@ -1,15 +1,16 @@
-% Partial code extraction from src/lustre_dev_tools_ffi.erl
+%% Partial code extraction from src/lustre_dev_tools_ffi.erl
 
 -module(eensy_dev_tools_ffi).
 -export([
-    check_live_reloading/0,
-    fs_start_link/2,
-    get_cwd/0,
-    get_cpu/0,
-    get_os/0,
-    otp_version/0,
-    exec/3
-]).
+         check_live_reloading/0,
+         fs_start_link/2,
+         get_cwd/0,
+         get_cpu/0,
+         get_os/0,
+         otp_version/0,
+         exec/3,
+         create_with_result/5
+        ]).
 
 otp_version() ->
     Version = erlang:system_info(otp_release),
@@ -47,21 +48,21 @@ exec(Command, Args, Cwd) ->
     Cwd_ = binary_to_list(Cwd),
 
     Name = case Command_ of
-      "./" ++ _ -> {spawn_executable, Command_};
-      "/" ++ _ -> {spawn_executable, Command_};
-      _ -> {spawn_executable, os:find_executable(Command_)}
-    end,
+               "./" ++ _ -> {spawn_executable, Command_};
+               "/" ++ _ -> {spawn_executable, Command_};
+               _ -> {spawn_executable, os:find_executable(Command_)}
+           end,
 
     Port = open_port(Name, [
-        exit_status,
-        binary,
-        hide,
-        stream,
-        eof,
-        stderr_to_stdout, % We need this to hide the process' stdout
-        {args, Args_},
-        {cd, Cwd_}
-    ]),
+                            exit_status,
+                            binary,
+                            hide,
+                            stream,
+                            eof,
+                            stderr_to_stdout, % We need this to hide the process' stdout
+                            {args, Args_},
+                            {cd, Cwd_}
+                           ]),
 
     do_exec(Port, []).
 
@@ -69,30 +70,30 @@ do_exec(Port, Acc) ->
     receive
         {Port, {data, Data}} -> do_exec(Port, [Data | Acc]);
         {Port, {exit_status, 0}} ->
-          port_close(Port),
-          {ok, list_to_binary(lists:reverse(Acc))};
+            port_close(Port),
+            {ok, list_to_binary(lists:reverse(Acc))};
         {Port, {exit_status, Code}} ->
-          port_close(Port),
-          {error, {Code, list_to_binary(lists:reverse(Acc))}}
+            port_close(Port),
+            {error, {Code, list_to_binary(lists:reverse(Acc))}}
     end.
 
 fs_start_link(Id, Path) ->
-    % We temporarily disable all logs when we call `start_link` because we want
-    % to be displaying a nicer custom error message and not the logged error
-    % coming from `fs`.
+    %% We temporarily disable all logs when we call `start_link` because we want
+    %% to be displaying a nicer custom error message and not the logged error
+    %% coming from `fs`.
     logger:add_primary_filter(discard_all, {fun(_, _) -> stop end, no_extra}),
     Result = fs:start_link(Id, Path),
     logger:remove_primary_filter(discard_all),
     Result.
 
-% This is what the underlying `fs` library does to check if it has support for
-% a given os:
-%
-% https://github.com/5HT/fs/blob/23a5b46b033437a3d69504811ae6c72f7704a78a/src/fs_sup.erl#L18-L46
-%
-% Sadly the library doesn't expose such a function and just logs any error
-% instead of surfacing it as a value, so we have to implement a slightly
-% modified version of it to have proper error messages.
+%% This is what the underlying `fs` library does to check if it has support for
+%% a given os:
+%%
+%% https://github.com/5HT/fs/blob/23a5b46b033437a3d69504811ae6c72f7704a78a/src/fs_sup.erl#L18-L46
+%%
+%% Sadly the library doesn't expose such a function and just logs any error
+%% instead of surfacing it as a value, so we have to implement a slightly
+%% modified version of it to have proper error messages.
 check_live_reloading() ->
     Watcher =
         case os:type() of
@@ -111,4 +112,33 @@ check_live_reloading() ->
                 false -> {error, {no_file_watcher_installed, Watcher}};
                 _ -> {ok, nil}
             end
+    end.
+
+create_with_result(OutputPath, InputPaths, Prune, StartModule, IncludeLines) ->
+    StMod =
+        case string:length(StartModule)
+        of 0 -> undefined;
+            _ -> StartModule
+        end,
+    Options =
+        #{
+          prune => Prune,
+          start_module => binary_to_atom(StMod),
+          application_module => binary_to_atom(StMod),
+          include_lines => IncludeLines
+         },
+    try packbeam_api:create(binary_to_list(OutputPath),
+                            [binary_to_list(I) || I <- InputPaths],
+                            Options)
+    of
+        ok ->
+            io:format("~nAvm file path ~s~n", [OutputPath]),
+            {ok, nil};
+        {error, Reason} ->
+            io:format("Modules ~s ~s ~n", [OutputPath, Reason]),
+            {error,  nil}
+    catch
+        throw:Reason ->
+            io:format("Error: ~p~n", [Reason]),
+            {error, nil}
     end.
