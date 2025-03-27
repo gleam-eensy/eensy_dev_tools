@@ -28,7 +28,7 @@ pub fn app() -> glint.Command(Nil) {
   use prune <- glint.flag(flag.prune())
   use _, _, flags <- glint.command()
   let script = {
-    use prune <- do(cli.get_bool("prune", False, ["build"], prune))
+    use prune <- do(cli.get_bool("prune", False, [], prune))
 
     do_app(prune)
   }

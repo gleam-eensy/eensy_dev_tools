@@ -24,9 +24,12 @@ pub fn app() -> glint.Command(Nil) {
   use <- glint.unnamed_args(glint.EqArgs(0))
   use platform <- glint.flag(flag.platform())
   use port <- glint.flag(flag.port())
+  use prune <- glint.flag(flag.prune())
   use _, _, flags <- glint.command()
   let script = {
-    pack.do_app(False)
+    use prune <- do(cli.get_bool("prune", False, [], prune))
+
+    pack.do_app(prune)
   }
 
   case cli.run(script, flags) {
